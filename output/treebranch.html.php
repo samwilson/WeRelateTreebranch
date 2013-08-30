@@ -1,17 +1,17 @@
 
-<?php if (count($treebranch->ancestors()) > 0): ?>
+<?php if (count($treebranch->getAncestors()) > 0): ?>
 <p><strong>Ancestors:</strong></p>
 <ul>
-<?php foreach ($treebranch->ancestors() as $ancestor): ?>
+<?php foreach ($treebranch->getAncestors() as $ancestor): ?>
 <li><?php echo Linker::link($ancestor->getTitle(), $ancestor->getFulLName()) ?></li>
 <?php endforeach ?>
 </ul>
 <?php endif ?>
 
-<?php if (count($treebranch->descendants()) > 0): ?>
+<?php if (count($treebranch->getDescendants()) > 0): ?>
 <p><strong>Descendants:</strong></p>
 <ul>
-<?php foreach ($treebranch->descendants() as $descendant): ?>
+<?php foreach ($treebranch->getDescendants() as $descendant): ?>
 <li><?php echo Linker::link($descendant->getTitle(), $descendant->getFulLName()) ?></li>
 <?php endforeach ?>
 </ul>

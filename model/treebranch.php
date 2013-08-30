@@ -20,33 +20,53 @@ class WeRelateTreebranch_treebranch extends WeRelateCore_base {
 		$this->load();
 		foreach ($this->xml->ancestors as $a) {
 			$ancestor = Title::makeTitle(NS_WERELATECORE_PERSON, (string)$a);
-			$this->ancestors($ancestor);
+			$this->traverseAncestors($ancestor);
 		}
 		foreach ($this->xml->descendants as $d) {
 			$descendant = Title::makeTitle(NS_WERELATECORE_PERSON, (string)$d);
-			$this->descendants($descendant);
+			$this->traverseDescendants($descendant);
 		}
 	}
 
-    protected function ancestors(Title $ancestor) {
+    protected function traverseAncestors(Title $ancestor) {
 		$this->notify($ancestor);
 		$person = new WeRelateCore_person($ancestor);
 		if (!$person->load()) return;
 		foreach ($person->getFamilies('child') as $family) {
-			if ($h = $family->getSpouse('husband')) $this->ancestors($h->getTitle());
-			if ($w = $family->getSpouse('wife')) $this->ancestors($w->getTitle());
+			if ($h = $family->getSpouse('husband')) $this->traverseAncestors($h->getTitle());
+			if ($w = $family->getSpouse('wife')) $this->traverseAncestors($w->getTitle());
 		}
     }
 
-    protected function descendants(Title $descendant) {
+    protected function traverseDescendants(Title $descendant) {
 		$this->notify($descendant);
 		$person = new WeRelateCore_person($descendant);
 		if (!$person->load()) return;
 		foreach ($person->getFamilies('spouse') as $family) {
 			foreach ($family->getChildren() as $child) {
-				$this->descendants($child->getTitle());
+				$this->traverseDescendants($child->getTitle());
 			}
 		}
+    }
+
+    public function getAncestors() {
+        if (!$this->load()) return false;
+        $ancestors = array();
+        foreach ($this->xml->ancestors as $a) {
+            $title = Title::makeTitle(NS_WERELATECORE_PERSON, $a);
+            $ancestors[] = new WeRelateCore_person($title);
+        }
+        return $ancestors;
+    }
+
+    public function getDescendants() {
+        if (!$this->load()) return false;
+        $descendants = array();
+        foreach ($this->xml->descendants as $d) {
+            $title = Title::makeTitle(NS_WERELATECORE_PERSON, $d);
+            $descendants[] = new WeRelateCore_person($title);
+        }
+        return $descendants;
     }
 
 }
