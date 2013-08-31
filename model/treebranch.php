@@ -33,6 +33,7 @@ class WeRelateTreebranch_treebranch extends WeRelateCore_base {
 		$person = new WeRelateCore_person($ancestor);
 		if (!$person->load()) return;
 		foreach ($person->getFamilies('child') as $family) {
+			$this->notify($family->getTitle());
 			if ($h = $family->getSpouse('husband')) $this->traverseAncestors($h->getTitle());
 			if ($w = $family->getSpouse('wife')) $this->traverseAncestors($w->getTitle());
 		}
@@ -43,6 +44,7 @@ class WeRelateTreebranch_treebranch extends WeRelateCore_base {
 		$person = new WeRelateCore_person($descendant);
 		if (!$person->load()) return;
 		foreach ($person->getFamilies('spouse') as $family) {
+			$this->notify($family->getTitle());
 			foreach ($family->getChildren() as $child) {
 				$this->traverseDescendants($child->getTitle());
 			}
